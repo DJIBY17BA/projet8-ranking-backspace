@@ -16,3 +16,8 @@ graph.h définit la structure Graph
 cette structure contient le nombre de sommets, le nombre d’arcs, les arcs et les degrés
 les tableaux sont représentés par des pointeurs
 le fichier annonce aussi les fonctions pour créer, libérer, calculer les degrés et afficher le graphe
+
+create_graph crée un graphe en mémoire
+malloc est utilisé pour la structure et les tableaux d’arcs
+calloc est utilisé pour initialiser les degrés à zéro
+free_graph libère toute la mémoire du graphe
