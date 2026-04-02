@@ -21,3 +21,10 @@ create_graph crée un graphe en mémoire
 malloc est utilisé pour la structure et les tableaux d’arcs
 calloc est utilisé pour initialiser les degrés à zéro
 free_graph libère toute la mémoire du graphe
+
+## Calcul des degrés
+La fonction compute_degrees parcourt tous les arcs du graphe.
+Pour chaque arc u -> v, elle augmente :
+le degré sortant de u
+le degré entrant de v
+Les degrés sont remis à zéro avant le calcul.

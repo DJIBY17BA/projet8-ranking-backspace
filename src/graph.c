@@ -35,3 +35,21 @@ void free_graph(Graph *g) {
     free(g->in_degree);
     free(g);
 }
+void compute_degrees(Graph *g) {
+    if (g == NULL) return;
+
+    for (int i = 0; i < g->n; i++) {
+        g->out_degree[i] = 0;
+        g->in_degree[i] = 0;
+    }
+
+    for (int k = 0; k < g->m; k++) {
+        int u = g->src[k];
+        int v = g->dst[k];
+
+        if (u >= 0 && u < g->n && v >= 0 && v < g->n) {
+            g->out_degree[u]++;
+            g->in_degree[v]++;
+        }
+    }
+}
