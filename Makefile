@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -O2
-SRC = src/main.c src/graph.c src/io.c src/pagerank.c
+SRC = src/main.c src/graph.c src/io.c src/pagerank.c src/backspace.c
 OUT = projet8.exe
 
 all:

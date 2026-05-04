@@ -8,6 +8,7 @@ typedef struct {
     int *dst;
     int *out_degree;
     int *in_degree;
+    int *origin;
 } Graph;
 
 Graph *create_graph(int n, int m);
