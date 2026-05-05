@@ -2,24 +2,20 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-df = pd.read_csv("results/results.csv")
+df = pd.read_csv("results/top10_diff.csv")
 
 os.makedirs("results/figures", exist_ok=True)
 
-for sommet in df["sommet"].unique():
-    data = df[df["sommet"] == sommet]
+plt.figure(figsize=(10, 6))
+plt.bar(df["sommet"].astype(str), df["diff"])
 
-    plt.figure()
-    plt.plot(data["alpha"], data["google"], marker="o", label="Google")
-    plt.plot(data["alpha"], data["backspace"], marker="o", label="Backspace")
+plt.xlabel("Sommet")
+plt.ylabel("Différence absolue")
+plt.title("Top 10 des différences entre PageRank Google et Backspace")
+plt.xticks(rotation=45)
+plt.tight_layout()
 
-    plt.xlabel("alpha")
-    plt.ylabel("Score PageRank")
-    plt.title(f"Comparaison Google vs Backspace - Sommet {sommet}")
-    plt.legend()
-    plt.grid(True)
+plt.savefig("results/figures/top10_diff.png")
+plt.close()
 
-    plt.savefig(f"results/figures/sommet_{sommet}.png")
-    plt.close()
-
-print("Graphes generes dans results/figures/")
+print("Figure generee : results/figures/top10_diff.png")
