@@ -6,7 +6,7 @@
 #include "backspace.h"
 
 int main(void) {
-    Graph *g = read_graph_from_file("data/test.txt");
+    Graph *g = read_graph_mtx("data/real/wb-cs-stanford.mtx");
 
     if (g == NULL) {
         printf("Erreur : impossible de lire le graphe.\n");
