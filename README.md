@@ -120,7 +120,11 @@ ou sous Windows :
 ```bash
 projet8.exe
 ```
+# Générer les figures :
 
+python scripts/plot_results.py
+
+Les figures sont ensuite sauvegardées dans results/figures/.
 ---
 
 # Paramètres étudiés
