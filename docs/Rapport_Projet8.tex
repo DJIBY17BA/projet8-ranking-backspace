@@ -1,0 +1,380 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{microtype}
+\usepackage{ragged2e}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage{float}
+\usepackage{booktabs}
+
+\geometry{margin=2.5cm}
+
+\title{\textbf{Projet 8 : Backspace pour les pages sans lien de sortie}\\
+\large M1 Informatique - Ranking et Recommandation}
+
+\author{Djiby Ba \\ Narimane Mouhcene}
+\date{Mai 2026}
+
+\begin{document}
+\RaggedRight 
+
+  
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+% =========================
+\section{Introduction}
+
+Le PageRank est un algorithme fondamental permettant d’évaluer l’importance des pages web en fonction de leur structure de liens.
+
+Dans le modèle classique de Google, les pages sans lien de sortie redistribuent leur probabilité de manière uniforme via le modèle du surfeur aléatoire.
+Le PageRank est un algorithme proposé par Page et Brin \cite{pagerank}.
+Dans ce projet, nous étudions une alternative appelée \textbf{Backspace}, où l’utilisateur revient à la page précédente lorsqu’il atteint une page sans lien sortant.
+
+L’objectif est de comparer les résultats obtenus avec le PageRank classique et cette nouvelle approche.
+
+% =========================
+\section{Méthodologie}
+
+\subsection{PageRank classique}
+
+Le PageRank est défini par :
+
+\[
+x^{(k+1)} = \alpha x^{(k)} G + (1 - \alpha) z
+\]
+
+\subsection{Modèle Backspace}
+
+Le modèle Backspace modifie le graphe :
+
+\begin{itemize}
+    \item duplication des sommets sans lien sortant
+    \item création de copies associées aux prédécesseurs
+    \item simulation du retour arrière
+\end{itemize}
+
+\subsection{Implémentation}
+
+\begin{itemize}
+    \item Lecture de graphes (.mtx)
+    \item PageRank (méthode des puissances)
+    \item Transformation Backspace
+    \item Export CSV + visualisation Python
+\end{itemize}
+
+% =========================
+\section{Données utilisées}
+
+Nous avons utilisé :
+\begin{itemize}
+    \item un petit graphe (validation)
+    \item la matrice réelle \textbf{wb-cs-stanford}
+\end{itemize}
+
+% =========================
+\section{Expériences}
+
+Paramètre étudié :
+\[
+\alpha \in \{0.5, 0.7, 0.85, 0.9, 0.99\}
+\]
+
+% =========================
+\section{Résultats}
+
+% ---------- TOP 10 ----------
+\subsection{Top 10 des différences}
+
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+Sommet & Google & Backspace & Différence \\
+\midrule
+9467 & 0.000065 & 0.005995 & 0.00593 \\
+6211 & 0.001179 & 0.004894 & 0.00371 \\
+9611 & 0.000065 & 0.003684 & 0.00362 \\
+8390 & 0.000605 & 0.003359 & 0.00275 \\
+2263 & 0.005439 & 0.003904 & 0.00153 \\
+2213 & 0.000355 & 0.001537 & 0.00118 \\
+8656 & 0.000065 & 0.001230 & 0.00117 \\
+5180 & 0.000517 & 0.001670 & 0.00115 \\
+5119 & 0.000327 & 0.001458 & 0.00113 \\
+9886 & 0.000084 & 0.001114 & 0.00103 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{top10_diff}
+    \caption{Top 10 des différences entre PageRank Google et Backspace}
+\end{figure}
+
+Les résultats montrent que certains sommets présentent des différences très importantes entre le PageRank classique et le modèle Backspace.
+
+En particulier, certains sommets comme 9467, 6211 ou 9611 voient leur score fortement augmenter dans le modèle Backspace par rapport au modèle de Google.
+
+Cela signifie que le mécanisme de retour arrière modifie profondément la diffusion de la probabilité dans le graphe. Contrairement au modèle classique de Google, qui redistribue régulièrement la probabilité grâce au surfeur aléatoire, le modèle Backspace tend à concentrer la probabilité dans certaines sous-structures spécifiques.
+
+Les sommets présentant les plus grandes différences sont généralement situés dans des régions du graphe favorisant les retours fréquents vers certains prédécesseurs. Le mécanisme Backspace crée ainsi des effets de renforcement locaux qui amplifient fortement certains scores.
+
+On observe également que plusieurs sommets ayant un score relativement faible dans le modèle Google deviennent beaucoup plus importants avec Backspace. Cela montre que le classement final dépend fortement du modèle de navigation choisi.
+
+Cette expérience met donc en évidence une différence fondamentale entre les deux approches :
+\begin{itemize}
+    \item le modèle de Google privilégie une diffusion globale et relativement uniforme ;
+    \item le modèle Backspace favorise des structures locales et des chemins spécifiques.
+\end{itemize}
+
+Les écarts observés confirment ainsi que de petites modifications dans le comportement du surfeur peuvent entraîner des changements significatifs dans la distribution stationnaire du PageRank.
+
+% ---------- ALPHA ----------
+\subsection{Influence de $\alpha$}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/evolution_alpha.png}
+    \caption{Evolution du PageRank en fonction de $\alpha$}
+\end{figure}
+
+On observe que le sommet 9467 possède un comportement très différent selon le modèle utilisé.
+
+Dans le modèle de Google, le score reste extrêmement faible pour toutes les valeurs de $\alpha$. Cela signifie que ce sommet ne bénéficie pas d’une importance globale suffisante dans le graphe et que la probabilité reste diffusée vers l’ensemble des pages grâce au surfeur aléatoire.
+
+En revanche, dans le modèle Backspace, le score est beaucoup plus élevé et augmente progressivement lorsque $\alpha$ augmente.
+
+Cela montre que ce sommet bénéficie fortement du mécanisme de retour arrière. Lorsque $\alpha$ devient grand, le surfeur suit davantage les liens réels du graphe et les effets de retour deviennent dominants.
+
+La probabilité reste alors concentrée dans certaines sous-structures locales du graphe, ce qui amplifie fortement l’importance de ce sommet.
+
+Cette figure illustre donc clairement l’une des principales différences entre les deux modèles :
+\begin{itemize}
+    \item le modèle de Google diffuse la probabilité de manière globale ;
+    \item le modèle Backspace favorise certaines régions spécifiques du graphe grâce aux retours arrière.
+\end{itemize}
+
+% ---------- SOMMETS ----------
+\subsection{Evolution du PageRank pour certains sommets}
+
+Les résultats précédents sont obtenus sur la matrice réelle \textbf{wb-cs-stanford}. 
+
+Cependant, sur un très grand graphe réel, de nombreux sommets présentent des évolutions très proches et des scores extrêmement faibles, ce qui rend l’interprétation visuelle plus difficile.
+
+Afin d’illustrer plus clairement les différents comportements possibles du modèle Backspace, nous utilisons également un petit graphe de validation.
+
+Ce petit graphe permet de visualiser plus facilement :
+\begin{itemize}
+    \item des sommets pénalisés par Backspace ;
+    \item des sommets relativement stables ;
+    \item des sommets fortement amplifiés.
+\end{itemize}
+
+Les figures suivantes sont donc issues du petit graphe de validation et servent principalement à illustrer le comportement des deux modèles.
+
+\paragraph{Sommet 0}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{sommet_0}
+    \caption{Comparaison PageRank Google vs Backspace pour le sommet 0}
+\end{figure}
+
+Le sommet 0 possède des liens vers les sommets 1 et 2, mais aucun sommet ne pointe vers lui.
+
+Dans le modèle Backspace, lorsque le surfeur atteint le sommet 1 sans lien sortant, il revient vers le sommet précédent. Une boucle locale se forme alors principalement entre les sommets 1 et 2.
+
+Lorsque $\alpha$ augmente, le surfeur suit davantage les liens réels du graphe et reste plus longtemps piégé dans cette sous-structure.
+
+Le sommet 0 reçoit alors de moins en moins de probabilité, car il n’appartient pas à cette boucle dominante.
+
+À l’inverse, dans le modèle classique de Google, le surfeur aléatoire redistribue régulièrement la probabilité dans tout le graphe, ce qui permet au sommet 0 de conserver un score plus stable.
+
+\paragraph{Sommet 1}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/sommet_1.png}
+    \caption{Comparaison PageRank Google vs Backspace pour le sommet 1}
+\end{figure}
+
+Le sommet 1 possède le score le plus élevé du graphe car il reçoit des liens provenant des sommets 0 et 2.
+
+Dans le modèle classique de Google, lorsque $\alpha$ augmente, le surfeur suit davantage les liens réels du graphe. Comme plusieurs chemins conduisent vers le sommet 1, celui-ci accumule progressivement davantage de probabilité, ce qui explique l’augmentation de son score.
+
+Dans le modèle Backspace, la situation est différente. Lorsqu’un surfeur atteint le sommet 1, qui ne possède aucun lien sortant, il revient immédiatement vers le sommet précédent.
+
+Ainsi, une partie importante de la probabilité repart vers les sommets 0 ou 2 au lieu de rester concentrée sur le sommet 1.
+
+Le mécanisme de retour arrière limite donc l’accumulation de probabilité sur ce sommet, ce qui explique pourquoi son score reste relativement stable malgré l’augmentation de $\alpha$.
+
+Cette figure montre que le modèle Backspace modifie fortement la manière dont la probabilité circule dans le graphe en redistribuant localement les visites.
+
+\paragraph{Sommet 2}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/sommet_2.png}
+    \caption{Comparaison PageRank Google vs Backspace pour le sommet 2}
+\end{figure}
+
+Le sommet 2 bénéficie fortement du mécanisme Backspace.
+
+En effet, lorsqu’un surfeur suit le chemin $0 \rightarrow 2 \rightarrow 1$, il revient ensuite vers le sommet 2 car le sommet 1 ne possède aucun lien sortant.
+
+Une boucle locale se forme alors entre les sommets 1 et 2 :
+\[
+2 \rightarrow 1 \rightarrow 2 \rightarrow 1 \rightarrow \dots
+\]
+
+Lorsque $\alpha$ augmente, le surfeur suit davantage les liens réels du graphe et reste plus longtemps dans cette boucle.
+
+Le sommet 2 est donc revisité très fréquemment, ce qui explique l’augmentation importante de son score dans le modèle Backspace.
+
+À l’inverse, dans le modèle classique de Google, la téléportation aléatoire casse régulièrement cette boucle et redistribue la probabilité dans le reste du graphe, ce qui limite l’augmentation du score.
+
+\subsection{Interprétation globale des résultats}
+
+Les différentes expériences montrent que le modèle Backspace ne modifie pas seulement légèrement les scores du PageRank, mais change profondément la manière dont la probabilité circule dans le graphe.
+
+Dans le modèle classique de Google, le surfeur aléatoire redistribue régulièrement la probabilité dans l’ensemble du graphe grâce au mécanisme de téléportation. Cette approche tend à produire une diffusion relativement globale et uniforme des scores.
+
+Le modèle Backspace fonctionne différemment. Lorsqu’un sommet sans lien sortant est atteint, le surfeur revient vers le sommet précédent au lieu d’effectuer une téléportation aléatoire. Le comportement du système dépend alors fortement du chemin parcouru.
+
+Les expériences réalisées sur le petit graphe illustrent clairement ce phénomène.
+
+Le sommet 0 est progressivement pénalisé dans le modèle Backspace car il ne fait pas partie des boucles dominantes du graphe. Lorsque $\alpha$ augmente, la probabilité reste davantage concentrée entre les sommets 1 et 2, ce qui réduit progressivement l’importance du sommet 0.
+
+À l’inverse, le sommet 2 bénéficie fortement du mécanisme de retour arrière. En effet, lorsqu’un surfeur suit le chemin :
+\[
+0 \rightarrow 2 \rightarrow 1
+\]
+et atteint le sommet 1 sans lien sortant, il revient automatiquement vers le sommet 2. Une boucle locale se crée alors :
+\[
+2 \rightarrow 1 \rightarrow 2 \rightarrow 1 \rightarrow \dots
+\]
+
+Lorsque $\alpha$ devient grand, le surfeur suit davantage les liens réels du graphe et reste plus longtemps piégé dans cette sous-structure. Le sommet 2 est donc revisité très fréquemment, ce qui explique l’augmentation importante de son score dans le modèle Backspace.
+
+Les expériences sur la matrice réelle wb-cs-stanford confirment également ce comportement. Certains sommets ayant un score très faible dans le modèle classique deviennent beaucoup plus importants avec Backspace. Les différences observées montrent que certaines régions du graphe concentrent fortement la probabilité lorsque les retours arrière deviennent dominants.
+
+On observe ainsi que :
+
+\begin{itemize}
+    \item certains sommets sont fortement amplifiés ;
+    \item d’autres sont fortement pénalisés ;
+    \item les écarts augmentent avec $\alpha$ ;
+    \item les structures locales et les cycles jouent un rôle fondamental.
+\end{itemize}
+
+Ces résultats montrent que le choix du modèle de navigation influence directement la distribution stationnaire du PageRank et donc le classement final des pages.
+
+Le modèle Backspace introduit ainsi une dépendance explicite au chemin parcouru, contrairement au modèle classique de Google qui repose davantage sur une diffusion globale de la probabilité.
+% =========================
+
+\section{Analyse}
+
+Les résultats expérimentaux mettent en évidence des différences structurelles importantes entre le PageRank classique et le modèle Backspace.
+
+Du point de vue théorique, le PageRank repose sur une chaîne de Markov définie par une matrice de transition stochastique $G$. Dans le modèle de Google, cette matrice est modifiée afin de traiter les pages sans lien sortant en redistribuant uniformément la probabilité grâce au surfeur aléatoire.
+
+Ce mécanisme garantit l’ergodicité de la chaîne et assure une distribution stationnaire unique, relativement stable et peu sensible aux structures locales du graphe.
+
+Le modèle Backspace, en revanche, modifie explicitement la structure du graphe avant la construction de la matrice de transition. En dupliquant les sommets de degré sortant nul et en introduisant des arcs de retour vers les prédécesseurs, il transforme la dynamique de la chaîne de Markov.
+
+Cette transformation introduit des cycles locaux supplémentaires, ce qui a pour effet de retenir la probabilité dans certaines régions du graphe. Autrement dit, la probabilité n’est plus diffusée globalement, mais peut rester piégée dans des sous-structures spécifiques.
+
+Les expériences réalisées sur le petit graphe illustrent clairement ce phénomène avec la boucle locale créée entre les sommets 1 et 2 dans le modèle Backspace :
+\[
+2 \rightarrow 1 \rightarrow 2 \rightarrow 1 \rightarrow \dots
+\]
+
+Lorsque le surfeur atteint le sommet 1 sans lien sortant, il revient vers le sommet précédent au lieu d’effectuer une téléportation aléatoire. Une partie importante de la probabilité reste alors concentrée dans cette sous-structure locale.
+
+Les observations expérimentales confirment ces propriétés :
+
+\begin{itemize}
+    \item Certains sommets présentent une forte augmentation de leur score dans le modèle Backspace. Cela correspond à des sommets impliqués dans des cycles ou des structures fortement connectées. Par exemple, le sommet 2 du petit graphe voit son score fortement augmenter car il est constamment revisité lors des retours arrière entre les sommets 1 et 2.
+    
+    \item À l’inverse, certains sommets voient leur score diminuer fortement, notamment lorsqu’ils ne bénéficient pas de chemins de retour favorables. Le sommet 0 est par exemple progressivement pénalisé car il ne fait pas partie de la boucle dominante et reçoit donc de moins en moins de probabilité lorsque $\alpha$ augmente.
+    
+    \item Le paramètre $\alpha$ joue un rôle clé. Lorsque $\alpha$ est faible, l’effet du vecteur de téléportation domine, ce qui réduit les différences entre les modèles.
+    
+    \item Lorsque $\alpha$ tend vers 1, la matrice de transition domine entièrement le comportement du système. Dans ce cas, les effets structurels introduits par Backspace deviennent prédominants, ce qui explique les écarts importants observés.
+\end{itemize}
+
+Les expériences réalisées sur la matrice réelle \textbf{wb-cs-stanford} confirment également ce comportement. Certains sommets ayant un score très faible dans le modèle classique deviennent beaucoup plus importants dans le modèle Backspace. Cela montre que certaines régions du graphe concentrent fortement la probabilité lorsque les retours arrière deviennent dominants.
+
+Ces résultats montrent que le modèle Backspace introduit une dépendance explicite au chemin de navigation, contrairement au modèle de Google qui repose sur une diffusion globale de la probabilité.
+
+Ainsi, le modèle Backspace peut être interprété comme une version plus « locale » du PageRank, mettant en avant des structures spécifiques du graphe, au détriment d’une vision globale.
+
+Cela souligne un point fondamental : le choix du modèle de navigation influence directement la distribution stationnaire et donc le classement final des pages.
+
+Enfin, cette étude met en évidence que de petites modifications dans la modélisation des transitions peuvent entraîner des changements significatifs dans les résultats, ce qui est un enjeu important dans les systèmes de recommandation et de classement.
+
+% =========================
+\section{Conclusion}
+
+Ce projet a permis d’étudier l’impact du traitement des pages sans lien sortant sur le calcul du PageRank.
+
+Nous avons comparé le modèle classique de Google avec un modèle alternatif appelé Backspace, dans lequel le surfeur revient vers la page précédente lorsqu’il atteint un sommet sans lien sortant.
+
+Les expériences réalisées sur un petit graphe de validation ainsi que sur la matrice réelle \textbf{wb-cs-stanford} montrent que cette modification change profondément la circulation de la probabilité dans le graphe.
+
+Le modèle Backspace introduit des retours locaux qui peuvent créer des boucles de navigation et concentrer fortement la probabilité dans certaines régions du graphe.
+
+Les résultats expérimentaux montrent notamment que :
+
+\begin{itemize}
+    \item certains sommets sont fortement amplifiés ;
+    \item d’autres sont fortement pénalisés ;
+    \item les différences augmentent lorsque $\alpha$ devient grand ;
+    \item les structures locales et les cycles jouent un rôle déterminant.
+\end{itemize}
+
+Les expériences sur le petit graphe illustrent clairement ce comportement. En particulier, la boucle locale créée entre les sommets 1 et 2 dans le modèle Backspace provoque une forte augmentation du score du sommet 2, tandis que le sommet 0 devient progressivement moins important.
+
+À l’inverse, le modèle classique de Google redistribue régulièrement la probabilité grâce au surfeur aléatoire, ce qui produit une diffusion plus globale et plus stable des scores.
+
+Cette étude montre ainsi que de petites modifications du modèle de navigation peuvent entraîner des changements significatifs dans la distribution stationnaire du PageRank et donc dans le classement final des pages.
+
+Le modèle Backspace constitue donc une alternative intéressante au modèle classique en mettant davantage en avant les structures locales du graphe et les chemins réellement parcourus par le surfeur.
+
+% =========================
+\begin{thebibliography}{9}
+
+\bibitem{pagerank}
+Larry Page, Sergey Brin, Rajeev Motwani, Terry Winograd,
+\textit{The PageRank Citation Ranking: Bringing Order to the Web},
+Stanford University, 1999.
+
+\bibitem{markov}
+Pierre Bremaud,
+\textit{Markov Chains},
+Springer, 1999.
+
+\bibitem{sparse}
+University of Florida Sparse Matrix Collection,
+\texttt{https://sparse.tamu.edu}
+
+\bibitem{wiki_pagerank}
+Wikipedia,
+\textit{PageRank},
+\texttt{https://fr.wikipedia.org/wiki/PageRank}
+
+\bibitem{wiki_markov}
+Wikipedia,
+\textit{Chaîne de Markov},
+\texttt{https://fr.wikipedia.org/wiki/Chaîne_de_Markov}
+
+\end{thebibliography}
+
+\end{document}
